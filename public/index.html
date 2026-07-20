@@ -80,11 +80,15 @@
             </div>
 
             <!-- Custom Viewport Inputs (Appears only when 'Original' is selected) -->
-            <div x-show="format === 'Original'" x-transition class="w-full p-4 bg-violet-50/60 border border-violet-200/80 rounded-2xl space-y-3">
+            <!-- Full-Width Custom Viewport & Continuous Canvas Controls -->
+            <div x-show="format === 'Original'" x-transition class="w-full p-4 bg-violet-50/60 border border-violet-200/80 rounded-2xl space-y-4">
+                
                 <div class="flex items-center space-x-2 text-violet-900 font-bold text-xs uppercase tracking-wider">
                     <i class="fa-solid fa-expand text-violet-600"></i>
                     <span>Custom Viewport Dimensions (Pixels)</span>
                 </div>
+
+                <!-- Viewport Inputs -->
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 mb-1">Viewport Width</label>
@@ -94,14 +98,29 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Viewport Height</label>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1" :class="noPageBreaks ? 'opacity-50' : ''">Viewport Height</label>
                         <div class="relative">
-                            <input type="number" x-model.number="viewportHeight" placeholder="800" min="300" max="3840" class="w-full pl-3 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 font-semibold text-sm focus:ring-2 focus:ring-violet-500 focus:outline-none">
+                            <input type="number" x-model.number="viewportHeight" :disabled="noPageBreaks" placeholder="800" min="300" max="3840" class="w-full pl-3 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 font-semibold text-sm focus:ring-2 focus:ring-violet-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-400">
                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-400">px</span>
                         </div>
                     </div>
                 </div>
-                <p class="text-[11px] text-slate-500 font-medium">Controls how media queries and layout breakpoints render in headless Chrome.</p>
+
+                <!-- Continuous Canvas Checkbox -->
+                <div class="pt-2 border-t border-violet-200/60">
+                    <label class="flex items-center space-x-3 cursor-pointer group">
+                        <input 
+                            type="checkbox" 
+                            x-model="noPageBreaks" 
+                            class="w-4 h-4 text-violet-600 border-slate-300 rounded focus:ring-violet-500 accent-violet-600 cursor-pointer"
+                        >
+                        <div>
+                            <span class="text-xs font-bold text-slate-700 group-hover:text-violet-900 transition-colors">Continuous Canvas (No Page Breaks)</span>
+                            <p class="text-[11px] text-slate-500 font-medium">Automatically sets PDF height to fit all content on a single page.</p>
+                        </div>
+                    </label>
+                </div>
+
             </div>
 
             <!-- Upload Mode Switcher Tabs -->
@@ -220,6 +239,7 @@
                 format: 'Original',
                 viewportWidth: 1200,   // Default desktop width
                 viewportHeight: 800,
+                noPageBreaks: false,
                 files: [],
                 badgeText: '',
                 isHovered: false,
@@ -271,6 +291,7 @@
                     formData.append('pdfName', this.pdfName || 'document');
                     formData.append('viewportWidth', this.viewportWidth || 1200);
                     formData.append('viewportHeight', this.viewportHeight || 800);
+                    formData.append('noPageBreaks', this.noPageBreaks);
                     
                     // Append files AND send relative paths as a parallel array/property
                     this.files.forEach(file => {

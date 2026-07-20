@@ -18,11 +18,12 @@ app.post('/convert', upload.array('folderFiles'), async (req, res) => {
     let browser = null;
 
     try {
-        const { pdfFormat, pdfName, filePaths, viewportWidth, viewportHeight } = req.body;
+        const { pdfFormat, pdfName, filePaths, viewportWidth, viewportHeight, noPageBreaks } = req.body;
         
         // Parse custom width and height
         const vpWidth = parseInt(viewportWidth, 10) || 1200;
         const vpHeight = parseInt(viewportHeight, 10) || 800;
+        const isContinuous = noPageBreaks === 'true';
 
         // ... [File extraction and writeFileSync setup remains identical] ...
         const sessionId = crypto.randomUUID();
@@ -94,10 +95,24 @@ app.post('/convert', upload.array('folderFiles'), async (req, res) => {
         };
 
         if (pdfFormat === 'Original') {
-            pdfOptions.preferCSSPageSize = true;
-            // Optionally match the PDF dimensions to the custom viewport if CSS @page isn't declared
-            pdfOptions.width = `${vpWidth}px`;
-            pdfOptions.height = `${vpHeight}px`;
+            if (isContinuous) {
+                // Measure total document height dynamically
+                const fullHeight = await page.evaluate(() => {
+                    return Math.max(
+                        document.body.scrollHeight,
+                        document.documentElement.scrollHeight
+                    );
+                });
+
+                // Update viewport and set matching PDF dimensions for single page output
+                await page.setViewport({ width: vpWidth, height: fullHeight, deviceScaleFactor: 2 });
+                pdfOptions.width = `${vpWidth}px`;
+                pdfOptions.height = `${fullHeight}px`;
+            } else {
+                pdfOptions.preferCSSPageSize = true;
+                pdfOptions.width = `${vpWidth}px`;
+                pdfOptions.height = `${vpHeight}px`;
+            }
         } else {
             pdfOptions.format = pdfFormat || 'A4';
         }
