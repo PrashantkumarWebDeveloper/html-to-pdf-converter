@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HTML to PDF Converter</title>
+    <!-- Tailwind CSS for utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6 for modern UI icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Separate Stylesheet Import -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-900 font-sans antialiased text-slate-800 lg:overflow-hidden">
+
+    <!-- Full Page Application Container Layout -->
+    <div class="min-h-screen w-full flex flex-col justify-between lg:h-screen">
+        
+        <!-- Main Content Core -->
+        <main class="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8">
+            <div class="workspace-card bg-white w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden border border-slate-700/20 flex flex-col md:flex-row min-h-[550px] lg:max-h-[85vh]">
+                
+                <!-- Left Column Header Panel (Dynamic Branding) -->
+                <div class="md:w-2/5 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-850 text-white p-6 sm:p-8 flex flex-col justify-center items-center text-center border-b md:border-b-0 md:border-r border-slate-800">
+                    <div class="p-4 bg-sky-500/10 rounded-full mb-4 border border-sky-500/20">
+                        <i class="fa-solid fa-file-pdf text-4xl sm:text-5xl text-sky-400"></i>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-black tracking-wide bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">HTML to PDF Converter</h2>
+                    <p class="text-slate-400 text-md sm:text-sm mt-2 max-w-xs">Convert your local directory templates cleanly into native PDF documents instantly.</p>
+                </div>
+
+                <!-- Right Column Working Workspace Dashboard -->
+                <div class="md:w-3/5 p-5 sm:p-8 flex flex-col justify-between overflow-y-auto bg-slate-50/50">
+                    
+                    <!-- System Guidelines & Expectations Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div class="info-panel bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                            <h3 class="text-md font-bold text-slate-900 flex items-center gap-2 mb-2">
+                                <i class="fa-solid fa-circle-info text-sky-500"></i> How to Proceed
+                            </h3>
+                            <ul class="text-[14px] text-slate-500 space-y-1.5 list-none pl-0">
+                                <li class="relative pl-3 before:content-['•'] before:text-sky-500 before:absolute before:left-0 before:font-bold">Provide a custom filename below.</li>
+                                <li class="relative pl-3 before:content-['•'] before:text-sky-500 before:absolute before:left-0 before:font-bold">Verify project tree paths match:</li>
+                            </ul>
+                            <div class="folder-tree mt-2 bg-slate-950 text-sky-400 p-2.5 rounded font-mono text-[12px] leading-normal overflow-x-auto">
+                                root-folder/<br>
+                                ├── index.html <span class="text-slate-500">(Required)</span><br>
+                                ├── style.css <span class="text-slate-500">(Optional)</span><br>
+                                └── images/ <span class="text-slate-500">(Optional)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-panel bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-md font-bold text-slate-900 flex items-center gap-2 mb-2">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-sky-500"></i> What to Expect
+                                </h3>
+                                <ul class="text-[14px] text-slate-500 space-y-1.5 list-none pl-0">
+                                    <li class="relative pl-3 before:content-['•'] before:text-sky-500 before:absolute before:left-0 before:font-bold">Headless rendering preserves exact layout dimensions.</li>
+                                    <li class="relative pl-3 before:content-['•'] before:text-sky-500 before:absolute before:left-0 before:font-bold">Fonts and vector icons load cleanly.</li>
+                                    <li class="relative pl-3 before:content-['•'] before:text-sky-500 before:absolute before:left-0 before:font-bold">The compiled package downloads automatically.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Processing/Interactive Form Workspace -->
+                    <form id="uploadForm" class="space-y-4">
+                        <div>
+                            <label class="block text-md font-bold text-slate-700 uppercase tracking-wider mb-1.5" for="pdfNameInput">Desired PDF Filename</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-file-signature absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                <input type="text" id="pdfNameInput" class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10" placeholder="e.g., My_Project_Layout" required>
+                            </div>
+                        </div>
+
+                        <!-- Put this block right above the "Select HTML Resource Folder" component in your index.html -->
+                        <div>
+                            <label class="block text-md font-bold text-slate-700 uppercase tracking-wider mb-1.5" for="pdfNameInput">Page Format</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-compass-drafting absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                <select id="pdfFormatInput" class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 appearance-none cursor-pointer">
+                                    <option value="A4" selected>A4 (Standard Document - 210mm x 297mm)</option>
+                                    <option value="Letter">Letter (US Standard - 8.5in x 11in)</option>
+                                    <option value="Legal">Legal (8.5in x 14in)</option>
+                                    <option value="Tabloid">Tabloid (11in x 17in)</option>
+                                    <option value="A3">A3 (Large Ledger - 297mm x 420mm)</option>
+                                    <option value="Original">Original (CSS-Defined / Viewport Sizing)</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-md font-bold text-slate-700 uppercase tracking-wider mb-1.5">Select HTML Resource Folder</label>
+                            <div class="file-dropzone border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-white cursor-pointer transition hover:border-sky-500 hover:bg-sky-50/30 relative">
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-slate-400 mb-1.5 transition main-icon"></i>
+                                <p class="text-md font-semibold text-slate-700">Tap to select directory workspace</p>
+                                <span class="text-[12px] text-slate-400 block mt-0.5">Loads components recursively to build paths</span>
+                                <input type="file" id="folderInput" name="folderFiles" webkitdirectory directory multiple required class="absolute inset-0 opacity-0 cursor-pointer">
+                            </div>
+                            <div class="selected-badge mt-2.5 inline-flex items-center gap-1.5 bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-[14px] font-bold hidden" id="folderBadge">
+                                <i class="fa-solid fa-circle-check"></i> <span id="badgeText">Assets Linked</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full bg-sky-600 text-white text-md font-bold py-3.5 px-6 rounded-xl flex justify-center items-center gap-2 transition shadow-lg shadow-sky-600/20 hover:bg-sky-700 active:scale-[0.99] disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none">
+                            <i class="fa-solid fa-gears"></i> Compile &amp; Export PDF
+                        </button>
+                    </form>
+
+                    <!-- Process Tracking Dynamic Progress Panel -->
+                    <div class="status-panel mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl hidden" id="statusMessage">
+                        <div class="flex items-center gap-2.5 text-emerald-800 text-md font-bold mb-2">
+                            <i class="fa-solid fa-circle-notch spinner animate-spin text-sm"></i>
+                            <span id="progressText">Uploading template components...</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                            <div id="progressBar" class="bg-emerald-500 h-full w-0 transition-all duration-300 ease-out"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+        
+        <!-- Web App Branding Footer Frame -->
+        <footer class="w-full text-center py-4 text-[14px] font-medium text-slate-500 tracking-wider">
+            &copy; 2026 HTML to PDF Engine • Headless Compiler System v1.1.0
+        </footer>
+    </div>
+
+<script>
+    const folderInput = document.getElementById('folderInput');
+    const folderBadge = document.getElementById('folderBadge');
+    const badgeText = document.getElementById('badgeText');
+    const pdfNameInput = document.getElementById('pdfNameInput');
+    const statusMessage = document.getElementById('statusMessage');
+    const submitBtn = document.getElementById('submitBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    folderInput.addEventListener('change', () => {
+        if (folderInput.files.length > 0) {
+            const samplePath = folderInput.files[0].webkitRelativePath;
+            const folderName = samplePath.split('/')[0] || "Target Dir";
+            badgeText.textContent = `${folderName} (${folderInput.files.length} items detected)`;
+            folderBadge.style.display = 'inline-flex';
+        } else {
+            folderBadge.style.display = 'none';
+        }
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (folderInput.files.length === 0) return;
+
+        statusMessage.style.display = 'block';
+        submitBtn.disabled = true;
+        progressBar.style.width = '0%';
+        progressText.textContent = 'Preparing workspace transmission...';
+
+        let filename = pdfNameInput.value.trim().replace(/[/\\?%*:|"<>. ]/g, '_');
+        if (!filename) filename = 'document';
+
+        const formData = new FormData();
+        const sessionFolder = 'session-' + Date.now();
+        formData.append('sessionFolder', sessionFolder);
+
+        for (const file of folderInput.files) {
+            formData.append('folderFiles', file, file.webkitRelativePath);
+        }
+
+        try {
+            progressBar.style.width = '25%';
+            progressText.textContent = 'Uploading files to staging engine...';
+            
+            // Add this line inside the 'submit' event listener right before sending the fetch request:
+            const selectedFormat = document.getElementById('pdfFormatInput').value;
+            formData.append('pdfFormat', selectedFormat);
+
+            const responsePromise = fetch('/convert', { method: 'POST', body: formData });
+            
+            setTimeout(() => { if(progressBar.style.width === '25%') { progressBar.style.width = '60%'; progressText.textContent = 'Rendering HTML asset trees within browser matrix...'; } }, 800);
+            setTimeout(() => { if(progressBar.style.width === '60%') { progressBar.style.width = '85%'; progressText.textContent = 'Writing clean viewport canvas onto print streams...'; } }, 2200);
+
+            const response = await responsePromise;
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                alert('Parsing Failure: ' + errorText);
+                return;
+            }
+
+            progressBar.style.width = '100%';
+            progressText.textContent = 'Success! Transmitting download array...';
+
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = `${filename}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        } catch (err) {
+            alert('An unexpected background infrastructure error occurred.');
+        } finally {
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+                submitBtn.disabled = false;
+            }, 1000);
+        }
+    });
+</script>
+</body>
+</html>

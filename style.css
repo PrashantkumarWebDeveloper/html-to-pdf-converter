@@ -1,0 +1,42 @@
+/* Custom mobile interactive tweaks mapping onto Tailwind architecture core */
+
+.file-dropzone:hover .main-icon,
+.file-dropzone:active .main-icon {
+    color: #0284c7 !important;
+}
+
+/* Eliminate tap-highlight delay artifact outlines on mobile iOS/Android engines */
+input, button, .file-dropzone {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Enable super smooth native kinetic acceleration friction styling over forms */
+.overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Custom Scrollbar configuration for elegant view across browsers */
+.overflow-y-auto::-webkit-scrollbar {
+    width: 6px;
+}
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 20px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Structural execution print override hooks */
+@media print {
+    body {
+        background: none;
+    }
+    .workspace-card {
+        box-shadow: none;
+        border: none;
+    }
+}
