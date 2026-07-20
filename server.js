@@ -18,7 +18,13 @@ app.post('/convert', upload.array('folderFiles'), async (req, res) => {
     let browser = null;
 
     try {
-        const { pdfFormat, pdfName, filePaths } = req.body;
+        const { pdfFormat, pdfName, filePaths, viewportWidth, viewportHeight } = req.body;
+        
+        // Parse custom width and height
+        const vpWidth = parseInt(viewportWidth, 10) || 1200;
+        const vpHeight = parseInt(viewportHeight, 10) || 800;
+
+        // ... [File extraction and writeFileSync setup remains identical] ...
         const sessionId = crypto.randomUUID();
         sessionFolder = path.join(__dirname, 'uploads', sessionId);
 
@@ -68,11 +74,19 @@ app.post('/convert', upload.array('folderFiles'), async (req, res) => {
         });
         const page = await browser.newPage();
 
-        // Load HTML via file:// protocol
+        // 1. Apply viewport dimensions before loading content
+        await page.setViewport({
+            width: vpWidth,
+            height: vpHeight,
+            deviceScaleFactor: 2 // Gives higher visual resolution for crisp text & images
+        });
+
+        // 2. Load local HTML file
         await page.goto(`file://${htmlPath}`, { 
             waitUntil: ['load', 'networkidle0'] 
         });
 
+        // 3. Configure PDF Output
         let pdfOptions = {
             path: pdfOutputPath,
             printBackground: true,
@@ -81,6 +95,9 @@ app.post('/convert', upload.array('folderFiles'), async (req, res) => {
 
         if (pdfFormat === 'Original') {
             pdfOptions.preferCSSPageSize = true;
+            // Optionally match the PDF dimensions to the custom viewport if CSS @page isn't declared
+            pdfOptions.width = `${vpWidth}px`;
+            pdfOptions.height = `${vpHeight}px`;
         } else {
             pdfOptions.format = pdfFormat || 'A4';
         }
@@ -89,7 +106,7 @@ app.post('/convert', upload.array('folderFiles'), async (req, res) => {
         await browser.close();
         browser = null;
 
-        // 4. Send PDF and clean up temporary folder
+        // 4. Download response & clean up
         res.download(pdfOutputPath, outputFilename, () => {
             if (sessionFolder && fs.existsSync(sessionFolder)) {
                 fs.rmSync(sessionFolder, { recursive: true, force: true });
