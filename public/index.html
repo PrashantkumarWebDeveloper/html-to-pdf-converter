@@ -65,12 +65,12 @@
                     </label>
                     <div class="relative">
                         <select x-model="format" id="pdfFormat" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all appearance-none cursor-pointer shadow-sm">
-                            <option value="A4">A4 (Standard)</option>
+                            <option value="Original">Original (CSS Size)</option>
+                            <option value="A4">A4</option>
                             <option value="Letter">Letter (US)</option>
                             <option value="Legal">Legal</option>
                             <option value="Tabloid">Tabloid</option>
                             <option value="A3">A3</option>
-                            <option value="Original">Original (CSS Size)</option>
                         </select>
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                             <i class="fa-solid fa-chevron-down text-sm"></i>
@@ -192,7 +192,7 @@
             Alpine.data('pdfApp', () => ({
                 uploadMode: 'folder',
                 pdfName: '',
-                format: 'A4',
+                format: 'Original',
                 files: [],
                 badgeText: '',
                 isHovered: false,
