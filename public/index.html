@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML to PDF Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .bg-mesh {
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(236, 72, 153, 0.25) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.25) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.2) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(168, 85, 247, 0.25) 0px, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-mesh min-h-screen text-slate-800 flex items-center justify-center p-4 sm:p-8">
+
+    <main x-data="pdfApp()" class="w-full max-w-xl bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_20px_50px_rgba(99,102,241,0.15)] rounded-3xl overflow-hidden p-6 sm:p-10">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-600 via-pink-500 to-amber-400 text-white shadow-lg shadow-violet-500/30 mb-4 transform hover:scale-105 transition-transform">
+                <i class="fa-solid fa-file-pdf text-3xl"></i>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                HTML to <span class="bg-gradient-to-r from-violet-600 via-pink-500 to-amber-500 bg-clip-text text-transparent">PDF Converter</span>
+            </h1>
+            <p class="text-slate-500 text-sm sm:text-base mt-2 font-medium">Transform HTML files or full project folders instantly.</p>
+        </header>
+
+        <form @submit.prevent="submitForm()" class="space-y-6">
+            
+            <!-- Output File Name & Page Format Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- PDF Output Name Input -->
+                <div>
+                    <label for="pdfName" class="block text-xs font-bold uppercase tracking-wider text-violet-900/70 mb-2">
+                        <i class="fa-solid fa-signature mr-1.5 text-violet-600"></i> Output PDF Name
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            x-model="pdfName" 
+                            placeholder="document" 
+                            class="w-full pl-4 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all shadow-sm"
+                        >
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 font-mono">.pdf</span>
+                    </div>
+                </div>
+
+                <!-- Page Format Dropdown -->
+                <div>
+                    <label for="pdfFormat" class="block text-xs font-bold uppercase tracking-wider text-violet-900/70 mb-2">
+                        <i class="fa-solid fa-sliders mr-1.5 text-violet-600"></i> Page Format
+                    </label>
+                    <div class="relative">
+                        <select x-model="format" id="pdfFormat" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all appearance-none cursor-pointer shadow-sm">
+                            <option value="A4">A4 (Standard)</option>
+                            <option value="Letter">Letter (US)</option>
+                            <option value="Legal">Legal</option>
+                            <option value="Tabloid">Tabloid</option>
+                            <option value="A3">A3</option>
+                            <option value="Original">Original (CSS Size)</option>
+                        </select>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Mode Switcher Tabs -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-violet-900/70 mb-2">
+                    <i class="fa-solid fa-folder-open mr-1.5 text-violet-600"></i> Select Upload Type
+                </label>
+                <div class="grid grid-cols-2 gap-2 p-1.5 bg-slate-100/80 rounded-2xl border border-slate-200 mb-3">
+                    <button 
+                        type="button" 
+                        @click="setUploadMode('folder')" 
+                        :class="uploadMode === 'folder' ? 'bg-white text-violet-700 shadow-md font-bold' : 'text-slate-500 font-medium hover:text-slate-700'"
+                        class="py-2 px-3 text-xs rounded-xl transition-all flex items-center justify-center space-x-1.5"
+                    >
+                        <i class="fa-solid fa-folder-tree"></i>
+                        <span>Full Folder</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        @click="setUploadMode('file')" 
+                        :class="uploadMode === 'file' ? 'bg-white text-violet-700 shadow-md font-bold' : 'text-slate-500 font-medium hover:text-slate-700'"
+                        class="py-2 px-3 text-xs rounded-xl transition-all flex items-center justify-center space-x-1.5"
+                    >
+                        <i class="fa-solid fa-file-code"></i>
+                        <span>Single File</span>
+                    </button>
+                    
+                </div>
+
+                <!-- Dropzone Box -->
+                <div 
+                    @dragover.prevent="isHovered = true"
+                    @dragleave.prevent="isHovered = false"
+                    @drop.prevent="handleDrop($event)"
+                    :class="{ 'bg-violet-100/80 border-violet-500 scale-[1.01]': isHovered, 'bg-violet-50/40 border-violet-200': !isHovered }"
+                    class="relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 cursor-pointer group"
+                >
+                    <!-- Single File Input -->
+                    <input 
+                        x-show="uploadMode === 'file'"
+                        type="file" 
+                        x-ref="fileInput"
+                        @change="handleFileSelect($event)" 
+                        accept=".html,.htm" 
+                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    >
+                    
+                    <!-- Folder Input (with webkitdirectory enabled) -->
+                    <input 
+                        x-show="uploadMode === 'folder'"
+                        type="file" 
+                        x-ref="folderInput"
+                        @change="handleFileSelect($event)" 
+                        webkitdirectory 
+                        directory 
+                        multiple 
+                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    >
+                    
+                    <div class="flex flex-col items-center justify-center space-y-3 pointer-events-none">
+                        <div class="w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center text-violet-600 group-hover:scale-110 group-hover:text-pink-500 transition-all duration-300">
+                            <i x-show="uploadMode === 'file'" class="fa-solid fa-file-arrow-up text-2xl"></i>
+                            <i x-show="uploadMode === 'folder'" class="fa-solid fa-folder-plus text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-700">
+                                Click to select <span x-text="uploadMode === 'file' ? 'an HTML file' : 'a project folder'" class="text-violet-600"></span>
+                            </p>
+                            <p class="text-xs text-slate-400 mt-1 font-medium" x-text="uploadMode === 'file' ? 'Upload a standalone .html document' : 'Upload folder containing HTML, CSS, and images'"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected File Indicator Badge -->
+                <template x-if="badgeText">
+                    <div class="mt-3 flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-semibold">
+                        <div class="flex items-center space-x-2 truncate">
+                            <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
+                            <span x-text="badgeText" class="truncate"></span>
+                        </div>
+                        <span class="text-[10px] bg-emerald-200/60 text-emerald-900 px-2 py-0.5 rounded-md font-bold">READY</span>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+                type="submit" 
+                :disabled="isLoading"
+                :class="{ 'opacity-70 cursor-not-allowed': isLoading }"
+                class="w-full py-4 px-6 bg-gradient-to-r from-violet-600 via-indigo-600 to-pink-500 hover:from-violet-500 hover:to-pink-400 text-white font-bold text-base rounded-2xl shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 active:scale-[0.99] transition-all duration-200 flex items-center justify-center space-x-2"
+            >
+                <i x-show="!isLoading" class="fa-solid fa-wand-magic-sparkles"></i>
+                <i x-show="isLoading" class="fa-solid fa-circle-notch fa-spin"></i>
+                <span x-text="isLoading ? 'Converting PDF...' : 'Generate PDF Now'"></span>
+            </button>
+        </form>
+
+        <!-- Status Toast Banner -->
+        <template x-if="status.message">
+            <div 
+                :class="status.type === 'error' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-emerald-100 text-emerald-800 border-emerald-200'"
+                class="mt-6 p-4 rounded-2xl text-center text-sm font-semibold border transition-all"
+                x-text="status.message"
+            ></div>
+        </template>
+
+    </main>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('pdfApp', () => ({
+                uploadMode: 'folder',
+                pdfName: '',
+                format: 'A4',
+                files: [],
+                badgeText: '',
+                isHovered: false,
+                isLoading: false,
+                status: { message: '', type: '' },
+
+                setUploadMode(mode) {
+                    this.uploadMode = mode;
+                    this.files = [];
+                    this.badgeText = '';
+                },
+
+                handleFileSelect(event) {
+                    this.files = Array.from(event.target.files);
+                    this.updateBadge();
+                },
+
+                handleDrop(event) {
+                    this.isHovered = false;
+                    if (event.dataTransfer.files.length) {
+                        this.files = Array.from(event.dataTransfer.files);
+                        this.updateBadge();
+                    }
+                },
+
+                updateBadge() {
+                    if (this.files.length === 1) {
+                        this.badgeText = `Selected: ${this.files[0].name}`;
+                    } else if (this.files.length > 1) {
+                        const samplePath = this.files[0].webkitRelativePath || this.files[0].name;
+                        const folderName = samplePath.split('/')[0] || "Folder";
+                        this.badgeText = `Selected Folder: ${folderName} (${this.files.length} items)`;
+                    } else {
+                        this.badgeText = '';
+                    }
+                },
+
+                async submitForm() {
+                    if (!this.files.length) {
+                        this.status = { message: 'Please select an HTML file or folder first.', type: 'error' };
+                        return;
+                    }
+
+                    this.isLoading = true;
+                    this.status = { message: '', type: '' };
+
+                    const formData = new FormData();
+                    formData.append('pdfFormat', this.format);
+                    formData.append('pdfName', this.pdfName || 'document');
+                    
+                    // Append files AND send relative paths as a parallel array/property
+                    this.files.forEach(file => {
+                        formData.append('folderFiles', file);
+                        // Explicitly send relative path (e.g. "my-portfolio/images/prashant.png")
+                        formData.append('filePaths', file.webkitRelativePath || file.name);
+                    });
+
+                    try {
+                        const response = await fetch('/convert', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!response.ok) throw new Error('Conversion failed. Check server logs.');
+
+                        const blob = await response.blob();
+                        const downloadUrl = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = downloadUrl;
+                        a.download = (this.pdfName.trim() || 'document') + '.pdf';
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+
+                        this.status = { message: 'Success! Your PDF download has started.', type: 'success' };
+                    } catch (err) {
+                        this.status = { message: err.message || 'Something went wrong.', type: 'error' };
+                    } finally {
+                        this.isLoading = false;
+                    }
+                }
+            }));
+        });
+    </script>
+</body>
+</html>
